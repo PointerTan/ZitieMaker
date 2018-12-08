@@ -7,7 +7,8 @@
 
 效果图：
 ![字帖效果图](http://lc-wdxn9gtr.cn-n1.lcfile.com/aa8958b14c19656bb578.jpg =300*500)
-<img src="http://lc-wdxn9gtr.cn-n1.lcfile.com/aa8958b14c19656bb578.jpg" title="" width="300" height="50" />
+
+<img src="http://lc-wdxn9gtr.cn-n1.lcfile.com/aa8958b14c19656bb578.jpg" width="500"/>
 
 空白字帖效果图：
 ![空白字帖图](http://lc-wdxn9gtr.cn-n1.lcfile.com/66be2ecd4ae9f9269bbc.jpg =300)
