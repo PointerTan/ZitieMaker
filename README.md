@@ -5,13 +5,13 @@
 使用方式：按页面提示输入文字，点击生成字帖之后，通过预览界面可以打印。。。当然还需要一台打印机，主要是可以选择自己喜欢的字帖，和自定义文字
 可以通知此地址访问：[http://zitie.leanapp.cn](http://zitie.leanapp.cn)
 
-效果图：
-![字帖效果图](http://lc-wdxn9gtr.cn-n1.lcfile.com/aa8958b14c19656bb578.jpg =300*500)
+字帖效果图:
 
 <img src="http://lc-wdxn9gtr.cn-n1.lcfile.com/aa8958b14c19656bb578.jpg" width="500"/>
 
 空白字帖效果图：
-![空白字帖图](http://lc-wdxn9gtr.cn-n1.lcfile.com/66be2ecd4ae9f9269bbc.jpg =300)
+
+<img src="http://lc-wdxn9gtr.cn-n1.lcfile.com/66be2ecd4ae9f9269bbc.jpg" width="500"/>
 
 主要代码在 public/index.html 里面
 fork了 [https://github.com/kinders/chinese-copybook-maker](https://github.com/kinders/chinese-copybook-maker) 的代码，并修改了逻辑代码。
