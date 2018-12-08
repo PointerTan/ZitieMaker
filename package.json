@@ -1,0 +1,10 @@
+{
+  "name": "static-getting-started",
+  "version": "1.0.0",
+  "dependencies": {
+    "node-static": "^0.7.9"
+  },
+  "engines": {
+    "node": "6.x"
+  }
+}

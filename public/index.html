@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>ZitieMaker</title>
+</head>
+
+<body>
+    <div>
+        <div id='body' style="margin-left: auto; margin-right: auto; width: 600px;">
+            <p>请使用IE9及以上版本，或者火狐、谷歌、Safari等浏览器。</p>
+            <div>
+                <div>
+                    <h2>1、输入文本</h2>
+                    <textarea id="words_area" cols="10" rows="8" style="margin-left: 30px; width: 80%;">请在这里输入文字！</textarea>
+                </div>
+                <div>
+                    <h2>2、每页行数</h2>
+                    <input id="copybook_line" type="number" name="copybook_line" max=400 min=1 step=1 value=24 style="margin-left: 30px; width: 20%;">
+                    <h2>3、每页列数</h2>
+                    <input id="copybook_column" type="number" name="copybook_column" max=400 min=1 step=1 value=18
+                        style="margin-left: 30px; width: 20%;">
+                </div>
+                <div>
+                    <h2>4、选择格子的颜色</h2>
+                    <input id="copybook_line_color" type="text" name="copybook_line_color" value="red" style="margin-left: 30px; width: 20%;">
+                </div>
+                <div>
+                    <h2>5、选择汉字的颜色</h2>
+                    <input id="copybook_word_color" type="text" name="copybook_word_color" value="black" style="margin-left: 30px; width: 20%;">
+                </div>
+                <div>
+                    <h2>6、选择字体</h2>
+                    <input id="copybook_word_style" type="text" name="copybook_word_style" value="QXyingbikai" style="margin-left: 30px; width: 20%;">
+                    <p>注意：字体的实现依赖系统。<br>请选择已安装字体，如选择未安装字体，将采用系统默认字体。</p>
+                    <p>下面是一些常用的参考值<br>楷体：KaiTi, KaiTi_GB2312, AR PL UKai CN, simkai, 楷体, STKaiti<br>仿宋体：Fangsong,
+                        STFangsong</p>
+                    <p>更多字体的代码可查看您的系统(如Windows里的“控制面板-字体”)，或者参考<a href="http://www.xwbetter.com/font-family/">这里</a></p>
+                </div>
+                <div>
+                    <h2>7、点击生成</h2>
+                    <button onclick="open_new_window()" style="width: 300px; height: 50px; font-size: 32px; margin-left: 150px;">生成字帖</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        const systemRate = window.devicePixelRatio
+        const gap = 3
+        function open_new_window() {
+            const new_window = window.open()
+            create_copybook(new_window.document)
+        }
+
+        function create_copybook(child_doc) {
+            if (!child_doc) return
+            const words_string = document.getElementById("words_area").value
+            const canvas_node_width = 40;
+            const canvas_line_color = document.getElementById("copybook_line_color").value
+            const canvas_word_color = document.getElementById("copybook_word_color").value
+            const canvas_word_style = document.getElementById("copybook_word_style").value
+            const canvas_line_count = document.getElementById("copybook_line").value
+            const canvas_column_count = document.getElementById("copybook_column").value
+            const solid_or_hollow = "solid"
+
+            child_doc.write(`<div id="canvas_area"><canvas width="1" height="1" id="cs">浏览器不支持canvas!<br>建议使用IE9，或火狐、谷歌浏览器。</canvas></div>`)
+
+            const lineCount = canvas_line_count
+            const columnCount = canvas_column_count
+            const words = repairWordString(words_string, columnCount)
+
+            const canvas_area = child_doc.getElementById("canvas_area");
+            const cs = child_doc.getElementById("cs")
+            for (let i = 0; i < lineCount; i++) {
+                const lineElement = child_doc.createElement("div")
+                lineElement.style["white-space"] = 'nowrap'
+                lineElement.style.width = '100%'
+                lineElement.style.height = canvas_node_width + gap
+                lineElement.height = (canvas_node_width + gap) * systemRate
+                canvas_area.insertBefore(lineElement, cs);
+                for (let j = 0; j < columnCount; j++) {
+                    const canvas_area_name = `word_${i}_${j}`;
+                    const new_canvas_node = child_doc.createElement("canvas");
+                    new_canvas_node.style.width = canvas_node_width + gap;
+                    new_canvas_node.style.height = canvas_node_width + gap;
+                    new_canvas_node.width = (canvas_node_width + gap) * systemRate;
+                    new_canvas_node.height = (canvas_node_width + gap) * systemRate;
+                    new_canvas_node.id = canvas_area_name;
+                    let text = ' '
+                    if (i * columnCount + j < words.length) {
+                        text = words[i * columnCount + j]
+                    }
+                    lineElement.appendChild(new_canvas_node)
+                    make_copy_book(canvas_area_name, text, canvas_line_color, canvas_word_color, canvas_word_style, solid_or_hollow, child_doc);
+                }
+            }
+        }
+
+        const repairWordString = (wordString, columnCount) => {
+            const result = []
+            for (let i = 0; i < wordString.length; i++) {
+                if (wordString[i] !== '\n') {
+                    result.push(wordString[i])
+                } else {
+                    const columnIndex = result.length % columnCount
+                    for (let from = columnIndex; from < columnCount; from++) {
+                        result.push(' ')
+                    }
+                }
+            }
+            return result
+        }
+
+        function make_copy_book(canvas_area_name, word_in_book, canvas_line_color, canvas_word_color, canvas_word_style, solid_or_hollow, doc) {
+            var oCanvas = doc.getElementById(canvas_area_name)
+            if (oCanvas.getContext) {
+                const ctx = oCanvas.getContext('2d')
+                const w = oCanvas.width - gap * systemRate   //边长
+                const half = w / 2        //边长的一半
+                const span = 4            //每条虚线的实线部分长度
+                const word_position = w / 2
+                // 下面画矩形
+                ctx.strokeStyle = canvas_line_color     // 红色线
+                ctx.lineWidth = 1               // 线宽
+                ctx.strokeRect(0, 0, w, w)   // 绘制无填充的矩形
+
+                //下面画中间的虚线!
+                ctx.save()
+                ctx.lineWidth = 4   //设置线宽
+                ctx.beginPath()
+                ctx.setLineDash([2 * systemRate, 2 * systemRate]) //创建2像素长，间隔为2像素的虚线
+                //横线
+                ctx.moveTo(0, half)
+                ctx.lineTo(w, half)
+                //竖线
+                ctx.moveTo(half, 0)
+                ctx.lineTo(half, w)
+                //把虚线画出来
+                ctx.stroke()
+                ctx.closePath()
+                ctx.restore()
+
+                // 下面写字
+                ctx.font = w / 5 * 4 + "px " + canvas_word_style
+                ctx.fillStyle = canvas_word_color
+                ctx.strokeStyle = canvas_word_color
+                ctx.textBaseline = "middle"
+                ctx.textAlign = "center"
+                if (solid_or_hollow == "solid") {
+                    ctx.fillText(word_in_book, word_position, word_position)  //字体实心效果
+                }
+                if (solid_or_hollow == "hollow") {
+                    ctx.strokeText(word_in_book, word_position, word_position)  //字体空心效果
+                }
+            }
+        }
+    </script>
+
+</body>
+
+</html>
